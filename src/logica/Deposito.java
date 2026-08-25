@@ -3,11 +3,11 @@ package logica;
 import java.time.LocalDateTime;
 
 public class Deposito {
-    int id;
-    boolean visitado;
-    LocalDateTime fechaUltimaAuditoria;
-    Deposito izquierdo;
-    Deposito derecho;
+    private int id;
+    private boolean visitado;
+    private LocalDateTime fechaUltimaAuditoria;
+    private Deposito izquierdo;
+    private Deposito derecho;
 
     public Deposito(int id) {
         this.id = id;
