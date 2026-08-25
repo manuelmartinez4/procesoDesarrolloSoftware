@@ -3,7 +3,7 @@ package logica;
 import java.time.LocalDateTime;
 
 public class ABB {
-    Deposito raiz;
+    private Deposito raiz;
 
     public ABB() {
         this.raiz = null;
@@ -27,14 +27,14 @@ public class ABB {
             // Si el JSON indica que no está auditado, se simula una fecha vieja (hace 45 días)
             // para posibilitar el correcto funcionamiento del recorrido de auditoría del examen.
             if (!auditado) {
-                nuevo.fechaUltimaAuditoria = LocalDateTime.now().minusDays(45);
+                nuevo.setFechaUltimaAuditoria(LocalDateTime.now().minusDays(45));
             }
             return nuevo;
         }
-        if (id < nodo.id) {
-            nodo.izquierdo = insertarRecursivo(nodo.izquierdo, id, auditado);
-        } else if (id > nodo.id) {
-            nodo.derecho = insertarRecursivo(nodo.derecho, id, auditado);
+        if (id < nodo.getId()) {
+            nodo.setIzquierdo(insertarRecursivo(nodo.getIzquierdo(), id, auditado));
+        } else if (id > nodo.getId()) {
+            nodo.setDerecho(insertarRecursivo(nodo.getDerecho(), id, auditado));
         }
         return nodo;
     }
@@ -51,12 +51,12 @@ public class ABB {
     private void auditarDepositosRecursivo(Deposito nodo, LocalDateTime limite) {
         if (nodo == null) return;
 
-        auditarDepositosRecursivo(nodo.izquierdo, limite);
-        auditarDepositosRecursivo(nodo.derecho, limite);
-
-        if (nodo.fechaUltimaAuditoria.isBefore(limite)) {
-            nodo.visitado = true;
-            nodo.fechaUltimaAuditoria = LocalDateTime.now();
+        auditarDepositosRecursivo(nodo.getIzquierdo(), limite);
+        auditarDepositosRecursivo(nodo.getDerecho(), limite);
+        
+        if (nodo.getFechaUltimaAuditoria().isBefore(limite)) {
+            nodo.setVisitado(true);
+            nodo.setFechaUltimaAuditoria(LocalDateTime.now());
         }
     }
 
@@ -71,13 +71,13 @@ public class ABB {
         if (nodo == null) return;
 
         if (nivelActual == nivel) {
-            System.out.println("Depósito ID: " + nodo.id + " | Visitado: " + nodo.visitado +
-                    " | Última Auditoría: " + nodo.fechaUltimaAuditoria);
+            System.out.println("Depósito ID: " + nodo.getId() + " | Visitado: " + nodo.isVisitado() +
+                    " | Última Auditoría: " + nodo.getFechaUltimaAuditoria());
             return; // Corte temprano: evita seguir explorando los hijos innecesariamente
         }
 
-        imprimirNivelRecursivo(nodo.izquierdo, nivel, nivelActual + 1);
-        imprimirNivelRecursivo(nodo.derecho, nivel, nivelActual + 1);
+        imprimirNivelRecursivo(nodo.getIzquierdo, nivel, nivelActual + 1);
+        imprimirNivelRecursivo(nodo.getDerecho, nivel, nivelActual + 1);
     }
 
     // --- BÚSQUEDA ---
@@ -88,7 +88,7 @@ public class ABB {
     public void buscar(int id) {
         Deposito resultado = buscarRecursivo(this.raiz, id);
         if (resultado != null) {
-            System.out.println("Depósito encontrado: ID " + resultado.id + " | Visitado: " + resultado.visitado +
+            System.out.println("Depósito encontrado: ID " + resultado.getId + " | Visitado: " + resultado.visitado +
                     " | Última Auditoría: " + resultado.fechaUltimaAuditoria);
         } else {
             System.out.println("Depósito con ID " + id + " no encontrado.");
@@ -96,13 +96,13 @@ public class ABB {
     }
 
     private Deposito buscarRecursivo(Deposito nodo, int id) {
-        if (nodo == null || nodo.id == id) {
+        if (nodo == null || nodo.getId == id) {
             return nodo;
         }
-        if (id < nodo.id) {
-            return buscarRecursivo(nodo.izquierdo, id);
+        if (id < nodo.getId) {
+            return bucarRecursivo(nodo.getIzquierdo, id);
         } else {
-            return buscarRecursivo(nodo.derecho, id);
+            return buscarRecursivo(nodo.getDerecho, id);
         }
     }
 }
