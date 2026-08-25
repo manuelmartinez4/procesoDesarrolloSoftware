@@ -136,7 +136,7 @@ public class RedDepositos {
         }
         
         // Caso recursivo: contar el nodo actual + nodos del subárbol izquierdo + nodos del subárbol derecho
-        return 1 + contarDeposito(raiz.getIzquierdo) + contarDeposito(raiz.getDerecho);
+        return 1 + contarDeposito(raiz.getIzquierdo()) + contarDeposito(raiz.getDerecho());
     }
 }
 
