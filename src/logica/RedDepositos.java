@@ -23,11 +23,8 @@ public class RedDepositos {
     }
 
     public void agregarRuta(int origen, int destino) {
-        // Asegura que la matriz pueda albergar los índices antes de asignar la conexión
-        garantizarCapacidad(Math.max(origen, destino));
-        matrizAdyacencia[origen][destino] = 1;
-        matrizAdyacencia[destino][origen] = 1; // Conexión bidireccional
-    }
+        agregarRutaPonderada(origen, destino, 1);
+    }    
     // Complejidad temporal: O(1) amortizado
     // Complejidad espacial: O(1)
 
