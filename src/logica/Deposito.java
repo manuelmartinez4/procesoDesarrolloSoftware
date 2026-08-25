@@ -21,6 +21,25 @@ public class Deposito {
     public boolean isVisitado() { return visitado; }
     public void setVisitado(boolean visitado) { this.visitado = visitado; }
     public LocalDateTime getFechaUltimaAuditoria() { return fechaUltimaAuditoria; }
+        public void setFechaUltimaAuditoria(LocalDateTime fechaUltimaAuditoria) {
+    this.fechaUltimaAuditoria = fechaUltimaAuditoria;
+    }
+    
+    public Deposito getIzquierdo() {
+        return izquierdo;
+    }
+    
+    public void setIzquierdo(Deposito izquierdo) {
+        this.izquierdo = izquierdo;
+    }
+    
+    public Deposito getDerecho() {
+        return derecho;
+    }
+    
+    public void setDerecho(Deposito derecho) {
+        this.derecho = derecho;
+    }
 
     @Override
     public String toString() {
