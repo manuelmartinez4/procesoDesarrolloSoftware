@@ -50,13 +50,9 @@ public class Camion {
 // Por lo tanto: f(n) pertenece a O(1) con c = 2 y n0 = 1
 
 
-    // Elimina la última carga realizada en caso de error
     public Paquete<String> deshacerUltimaCargaDelCamion() {
-    if (pilaDePaquetes.isEmpty()) {
-        return null;
+        return descargarPaqueteDelCamion();
     }
-    return pilaDePaquetes.pop();
-}
 
     // Operación: Mostrar Paquetes
     public void mostrarPaquetesDelCamion() {
