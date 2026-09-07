@@ -103,4 +103,17 @@ public class ABB {
     
         return buscarRecursivo(nodo.getDerecho(), id);
     }
+    public int contarDepositos() {
+        return contarDepositosRecursivo(raiz);
+    }
+    
+    private int contarDepositosRecursivo(Deposito nodo) {
+        if (nodo == null) {
+            return 0;
+        }
+    
+        return 1
+                + contarDepositosRecursivo(nodo.getIzquierdo())
+                + contarDepositosRecursivo(nodo.getDerecho());
+    }    
 }
