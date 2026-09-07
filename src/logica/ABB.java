@@ -54,9 +54,8 @@ public class ABB {
         auditarDepositosRecursivo(nodo.getIzquierdo(), limite);
         auditarDepositosRecursivo(nodo.getDerecho(), limite);
         
-        if (nodo.getFechaUltimaAuditoria().isBefore(limite)) {
-            nodo.setVisitado(true);
-            nodo.setFechaUltimaAuditoria(LocalDateTime.now());
+        if (nodo.necesitaAuditoria(limite)) {
+            nodo.auditar();
         }
     }
 
