@@ -1,8 +1,5 @@
 package logica;
 
-import com.google.gson.Gson;
-
-import java.io.FileReader;
 import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
