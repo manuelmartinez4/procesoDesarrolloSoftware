@@ -65,15 +65,5 @@ public class RedDepositos {
         matrizAdyacencia[origen][destino] = peso;
         matrizAdyacencia[destino][origen] = peso;
     }
-
-    public int contarDeposito(Deposito raiz) {
-        // Caso base: si el nodo es null, retornar 0
-        if (raiz == null) {
-            return 0;
-        }
-        
-        // Caso recursivo: contar el nodo actual + nodos del subárbol izquierdo + nodos del subárbol derecho
-        return 1 + contarDeposito(raiz.getIzquierdo()) + contarDeposito(raiz.getDerecho());
-    }
 }
 
