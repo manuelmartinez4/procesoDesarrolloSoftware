@@ -17,86 +17,79 @@ public class MenuPrincipal {
 
     public void iniciarMenu() {
         int opcion = 0;
+    
         while (opcion != 13) {
-            System.out.println("\n--- LOGI-UADE 2026: GESTIÓN LOGISTICA ---");
-            System.out.println("1. Cargar inventario desde JSON");
-            System.out.println("2. Cargar paquete manualmente");
-            System.out.println("3. Enviar paquete del Centro al Camión");
-            System.out.println("4. Ver estado del Camión");
-            System.out.println("5. Deshacer última carga del Camión");
-            System.out.println("6. Descargar Camión");
-            System.out.println("--- Depósitos ---");
-            System.out.println("7. Cargar depósitos desde JSON");
-            System.out.println("8. Insertar depósito en el ABB");
-            System.out.println("9. Auditar depósitos");
-            System.out.println("10. Imprimir depósitos por nivel");
-            System.out.println("11. Buscar depósito");
-            System.out.println("12. Calcular ruta entre depósitos");
-            System.out.println("13. Salir");
-            System.out.print("Seleccione: ");
-
+            mostrarMenu();
+    
             opcion = scanner.nextInt();
             scanner.nextLine();
-
-            switch (opcion) {
-                case 1: cargarDesdeJson(); break;
-                case 2: cargarManual(); break;
-                case 3: despacharHaciaCamion(); break;
-                case 4: camion.mostrarPaquetesDelCamion(); break;
-                case 5: deshacerCarga(); break;
-                case 6: descargar(); break;
-                case 7: cargarDepositosDesdeJson(); break;
-                case 8: insertarDeposito(); break;
-                case 9: arbolDepositos.auditarDepositos(); break;
-                case 10: imprimirNivel(); break;
-                case 11: buscarDeposito(); break;
-                case 12: calcularRuta(); break;
-                case 13: System.out.println("Saliendo..."); break;
-                default: System.out.println("Opción no válida.");
-            }
+    
+            procesarOpcion(opcion);
         }
     }
-        
-    // Operación: Cargar desde JSON
-    private void cargarDesdeJson() {
-        try (FileReader reader = new FileReader("src/logica/inventario.json")) {
-            Gson gson = new Gson();
-            Paquete[] lista = gson.fromJson(reader, Paquete[].class);
-            if (lista != null) {                                        // 1
-                for (Paquete p : lista) {                               // 1 + 3n
-                    String idString = String.valueOf(p.getId());        // 2n
-                    if (!idsUsados.contains(idString)) {                // 2n
-                        idsUsados.add(idString);                        // n
-                        Paquete<String> nuevo = new Paquete<>(idString, p.getPeso(), p.getDestino(), p.isUrgente(), (String)p.getContenido()); // 6n
-                        centro.recibirPaquete(nuevo);                   // n
-                    }
-                }
-                System.out.println("Inventario cargado exitosamente."); // 1
-            }
-        } catch (Exception e) {
-            System.out.println("Error al cargar JSON: " + e.getMessage());
+    private void mostrarMenu() {
+        System.out.println("\n--- LOGI-UADE 2026: GESTIÓN LOGISTICA ---");
+        System.out.println("1. Cargar inventario desde JSON");
+        System.out.println("2. Cargar paquete manualmente");
+        System.out.println("3. Enviar paquete del Centro al Camión");
+        System.out.println("4. Ver estado del Camión");
+        System.out.println("5. Deshacer última carga del Camión");
+        System.out.println("6. Descargar Camión");
+        System.out.println("--- Depósitos ---");
+        System.out.println("7. Cargar depósitos desde JSON");
+        System.out.println("8. Insertar depósito en el ABB");
+        System.out.println("9. Auditar depósitos");
+        System.out.println("10. Imprimir depósitos por nivel");
+        System.out.println("11. Buscar depósito");
+        System.out.println("12. Calcular ruta entre depósitos");
+        System.out.println("13. Salir");
+        System.out.print("Seleccione: ");
+    }
+    private void procesarOpcion(int opcion) {
+        switch (opcion) {
+            case 1:
+                cargadorJson.cargarInventario(idsUsados, centro);
+                break;
+            case 2:
+                cargarManual();
+                break;
+            case 3:
+                despacharHaciaCamion();
+                break;
+            case 4:
+                camion.mostrarPaquetes();
+                break;
+            case 5:
+                deshacerCarga();
+                break;
+            case 6:
+                descargar();
+                break;
+            case 7:
+                cargadorJson.cargarDepositos(arbolDepositos, redDepositos);
+                break;
+            case 8:
+                insertarDeposito();
+                break;
+            case 9:
+                arbolDepositos.auditarDepositos();
+                break;
+            case 10:
+                imprimirNivel();
+                break;
+            case 11:
+                buscarDeposito();
+                break;
+            case 12:
+                calcularRuta();
+                break;
+            case 13:
+                System.out.println("Saliendo...");
+                break;
+            default:
+                System.out.println("Opción no válida.");
         }
     }
-
-// Conteo de instrucciones (Peor caso del bloque if principal, 'n' paquetes nuevos):
-// f(n) = 1 + (1 + 3n) + 2n + 2n + n + 6n + n + 1
-// f(n) = 3 + 15n
-
-// Complejidad asintótica:
-// f(n) = O(n)
-// f(n) <= c * n
-// 3 + 15n <= c * n
-// Dividimos por n:
-// 3/n + 15 <= c
-// Acotamos: 15 + 1 = 16
-// Elegimos c = 16
-
-// Verificación:
-// n = 1: 3/1 + 15 = 18 <= 16  ✗ NO CUMPLE
-// n = 2: 3/2 + 15 = 16.5 <= 16  ✗ NO CUMPLE
-// n = 3: 3/3 + 15 = 16 <= 16  ✓ CUMPLE
-// Por lo tanto: f(n) pertenece a O(n) con c = 16 y n0 = 3
-
 
     private void cargarManual() {
         String id;                                                      // 1
@@ -123,53 +116,38 @@ public class MenuPrincipal {
         boolean urgente = scanner.nextLine().equalsIgnoreCase("si");    // 3
 
         System.out.print("Contenido: ");                                // 1
-        String cont = scanner.nextLine();                               // 2
+        String contenido = scanner.nextLine();                               // 2
 
-        centro.recibirPaquete(new Paquete<>(id, peso, destino, urgente, cont)); // 3
+        centro.recibirPaquete(new Paquete(id, peso, destino, urgente, contenido)); // 3
         System.out.println("Paquete ingresado correctamente al Centro."); // 1
     }
 
-    /*
-     * * Conteo:
-     * f(k) = (k + 1) + (k + 1) + (2k + 2) + (2k + 2) + k + (1 + 1 + 1 + 2 + 1 + 1 + 2 + 1 + 3 + 1 + 2 + 3 + 1)
-     * f(k) = 7k + 27
-     * * Demostración:
-     * f(k) = O(k)
-     * 7k + 27 <= c * k
-     * Dividimos por k: 7 + 27/k <= c
-     * Acotamos: término dominante + 1 = 7 + 1 = 8
-     * Elegimos c = 8
-     * * Verificación de n0 (k0):
-     * n = 1: 34 <= 8 (Falso)
-     * n = 27: 8 <= 8 (Verdadero)
-     * * Resultado: f(k) pertenece a O(k) con c = 8 y k0 = 27
-     */
-
-
-
     private void despacharHaciaCamion() {
-        Paquete<String> p = centro.despacharSiguiente();
-        if (p != null) {
-            camion.cargarPaqueteAlCamion(p);
-            System.out.println("Paquete enviado al camión: " + p.getId());
+        Paquete paquete = centro.despacharSiguiente();
+    
+        if (paquete != null) {
+            camion.cargarPaquete(paquete);
+            System.out.println("Paquete enviado al camión: " + paquete.getId());
         } else {
             System.out.println("No hay paquetes en el centro.");
         }
     }
 
     private void deshacerCarga() {
-        Paquete<String> p = camion.deshacerUltimaCargaDelCamion();
-        if (p != null) {
-            System.out.println("Carga deshecha: " + p.getId());
+        Paquete paquete = camion.deshacerUltimaCarga();
+    
+        if (paquete != null) {
+            System.out.println("Carga deshecha: " + paquete.getId());
         } else {
             System.out.println("Camión vacío.");
         }
     }
 
     private void descargar() {
-        Paquete<String> p = camion.descargarPaqueteDelCamion();
-        if (p != null) {
-            System.out.println("Descargando: " + p);
+        Paquete paquete = camion.descargarPaquete();
+    
+        if (paquete != null) {
+            System.out.println("Descargando: " + paquete);
         } else {
             System.out.println("Camión vacío.");
         }
@@ -212,27 +190,4 @@ public class MenuPrincipal {
             System.out.println("Cantidad de saltos: " + saltos);
         }
     }
-
-    private void cargarDepositosDesdeJson() {
-        try (FileReader reader = new FileReader("src/logica/depositos.json")) {
-            Gson gson = new Gson();
-            DepositosWrapper wrapper = gson.fromJson(reader, DepositosWrapper.class);
-            if (wrapper != null && wrapper.depositos != null) {
-                for (DepositoJson d : wrapper.depositos) {
-                    // Se envía el ID y el booleano 'auditado' real leído desde la persistencia
-                    arbolDepositos.insertar(d.id, d.auditado);
-                    if (d.conexiones != null) {
-                        for (int conexion : d.conexiones) {
-                            redDepositos.agregarRuta(d.id, conexion);
-                        }
-                    }
-                }
-                System.out.println("Depósitos cargados exitosamente.");
-            }
-        } catch (Exception e) {
-            System.out.println("Error al cargar depósitos: " + e.getMessage());
-        }
-    }
-
-
 }
