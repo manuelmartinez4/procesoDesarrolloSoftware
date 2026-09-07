@@ -6,10 +6,10 @@ public class Camion {
 
     // Pila que representa los paquetes cargados en el camión.
     // LIFO: el último paquete cargado es el primero en descargarse.
-    private Stack<Paquete<String>> pilaDePaquetes = new Stack<>();
+    private Stack<Paquete> pilaDePaquetes = new Stack<>();
 
     // Operación: Cargar Paquete
-    public void cargarPaqueteAlCamion(Paquete<String> paquete) {
+    public void cargarPaquete(Paquete paquete) {
         pilaDePaquetes.push(paquete);                   // 1
     }
 
@@ -28,7 +28,7 @@ public class Camion {
 
 
     // Operación: Descargar Paquete / Deshacer Carga
-    public Paquete<String> descargarPaqueteDelCamion() {
+    public Paquete descargarPaquete() {
         if (pilaDePaquetes.isEmpty()) {                 // 1
             return null;                                // 1 (Mejor caso)
         }
@@ -50,16 +50,16 @@ public class Camion {
 // Por lo tanto: f(n) pertenece a O(1) con c = 2 y n0 = 1
 
 
-    public Paquete<String> deshacerUltimaCargaDelCamion() {
-        return descargarPaqueteDelCamion();
+    public Paquete deshacerUltimaCarga() {
+        return descargarPaquete();
     }
 
     // Operación: Mostrar Paquetes
-    public void mostrarPaquetesDelCamion() {
+    public void mostrarPaquetes() {
         if (pilaDePaquetes.isEmpty()) {                         // 1
             System.out.println("El camión está vacío.");        // 1
         } else {
-            for (Paquete<String> paquete : pilaDePaquetes) {    // 1 + 3n (Init + n comparaciones + 2n asignaciones)
+            for (Paquete paquete : pilaDePaquetes) {    // 1 + 3n (Init + n comparaciones + 2n asignaciones)
                 System.out.println(paquete);                    // n * 1 = n
             }
         }
