@@ -40,7 +40,14 @@ public class Deposito {
     public void setDerecho(Deposito derecho) {
         this.derecho = derecho;
     }
-
+    public boolean necesitaAuditoria(LocalDateTime limite) {
+        return fechaUltimaAuditoria.isBefore(limite);
+    }
+    
+    public void auditar() {
+        visitado = true;
+        fechaUltimaAuditoria = LocalDateTime.now();
+    }
     @Override
     public String toString() {
         return "Depósito [" + id + "] - " + " (Auditado: " + visitado + ")";
