@@ -11,6 +11,7 @@ public class MenuPrincipal {
     private Camion camion = new Camion();
     private ABB arbolDepositos = new ABB();
     private RedDepositos redDepositos = new RedDepositos(100);
+    private CargadorJson cargadorJson = new CargadorJson();
 
     private Set<String> idsUsados = new HashSet<>();
 
