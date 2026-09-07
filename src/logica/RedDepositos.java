@@ -66,37 +66,6 @@ public class RedDepositos {
         matrizAdyacencia[destino][origen] = peso;
     }
 
-    public int dijkstra(int origen, int destino) {
-        if (origen < 0 || origen >= numDepositos || destino < 0 || destino >= numDepositos) {
-            return -1;
-        }
-        int[] distancias = new int[numDepositos];
-        boolean[] visitado = new boolean[numDepositos];
-        java.util.Arrays.fill(distancias, Integer.MAX_VALUE);
-        distancias[origen] = 0;
-
-        for (int i = 0; i < numDepositos; i++) {
-            int nodoMinimo = -1;
-            for (int j = 0; j < numDepositos; j++) {
-                if (!visitado[j] && (nodoMinimo == -1 || distancias[j] < distancias[nodoMinimo])) {
-                    nodoMinimo = j;
-                }
-            }
-            if (nodoMinimo == -1 || distancias[nodoMinimo] == Integer.MAX_VALUE) break;
-            visitado[nodoMinimo] = true;
-
-            for (int j = 0; j < numDepositos; j++) {
-                if (matrizAdyacencia[nodoMinimo][j] > 0 && !visitado[j]) {
-                    int nuevaDistancia = distancias[nodoMinimo] + matrizAdyacencia[nodoMinimo][j];
-                    if (nuevaDistancia < distancias[j]) {
-                        distancias[j] = nuevaDistancia;
-                    }
-                }
-            }
-        }
-        return distancias[destino] == Integer.MAX_VALUE ? -1 : distancias[destino];
-    }
-
     public int contarDeposito(Deposito raiz) {
         // Caso base: si el nodo es null, retornar 0
         if (raiz == null) {
