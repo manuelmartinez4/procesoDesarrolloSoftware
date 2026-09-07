@@ -68,41 +68,40 @@ public class ABB {
     }
 
     private void imprimirNivelRecursivo(Deposito nodo, int nivel, int nivelActual) {
-        if (nodo == null) return;
+    if (nodo == null) return;
 
-        if (nivelActual == nivel) {
-            System.out.println("Depósito ID: " + nodo.getId() + " | Visitado: " + nodo.isVisitado() +
-                    " | Última Auditoría: " + nodo.getFechaUltimaAuditoria());
-            return; // Corte temprano: evita seguir explorando los hijos innecesariamente
-        }
-
-        imprimirNivelRecursivo(nodo.getIzquierdo, nivel, nivelActual + 1);
-        imprimirNivelRecursivo(nodo.getDerecho, nivel, nivelActual + 1);
+    if (nivelActual == nivel) {
+        System.out.println("Depósito ID: " + nodo.getId()
+                + " | Visitado: " + nodo.isVisitado()
+                + " | Última Auditoría: " + nodo.getFechaUltimaAuditoria());
+        return;
     }
 
-    // --- BÚSQUEDA ---
-    // Complejidad temporal: O(log n) caso promedio, O(n) peor caso
-    // Caso promedio: árbol balanceado, descarta la mitad en cada comparación
-    // Peor caso: árbol desbalanceado, recorre todos los nodos
-    // Complejidad espacial: O(log n) por la pila de recursión
+    imprimirNivelRecursivo(nodo.getIzquierdo(), nivel, nivelActual + 1);
+    imprimirNivelRecursivo(nodo.getDerecho(), nivel, nivelActual + 1);
+    }
+
     public void buscar(int id) {
-        Deposito resultado = buscarRecursivo(this.raiz, id);
+        Deposito resultado = buscarRecursivo(raiz, id);
+    
         if (resultado != null) {
-            System.out.println("Depósito encontrado: ID " + resultado.getId + " | Visitado: " + resultado.visitado +
-                    " | Última Auditoría: " + resultado.fechaUltimaAuditoria);
+            System.out.println("Depósito encontrado: ID " + resultado.getId()
+                    + " | Visitado: " + resultado.isVisitado()
+                    + " | Última Auditoría: " + resultado.getFechaUltimaAuditoria());
         } else {
             System.out.println("Depósito con ID " + id + " no encontrado.");
         }
     }
 
     private Deposito buscarRecursivo(Deposito nodo, int id) {
-        if (nodo == null || nodo.getId == id) {
+        if (nodo == null || nodo.getId() == id) {
             return nodo;
         }
-        if (id < nodo.getId) {
-            return bucarRecursivo(nodo.getIzquierdo, id);
-        } else {
-            return buscarRecursivo(nodo.getDerecho, id);
+    
+        if (id < nodo.getId()) {
+            return buscarRecursivo(nodo.getIzquierdo(), id);
         }
+    
+        return buscarRecursivo(nodo.getDerecho(), id);
     }
 }
