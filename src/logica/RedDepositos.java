@@ -96,39 +96,7 @@ public class RedDepositos {
         }
         return distancias[destino] == Integer.MAX_VALUE ? -1 : distancias[destino];
     }
-    public void bfs(int idOrigen) {
-        if (idOrigen < 0 || idOrigen >= numDepositos) {
-            System.out.println("ID de depósito inválido.");
-            return;
-        }
-        boolean[] visitado = new boolean[numDepositos];
-        java.util.Queue<Integer> cola = new java.util.LinkedList<>();
-        cola.add(idOrigen);
-        visitado[idOrigen] = true;
 
-        System.out.println("Orden de visita BFS desde el depósito " + idOrigen + ":");
-        while (!cola.isEmpty()) {
-            int actual = cola.poll();
-            System.out.print(actual + " ");
-            for (int i = 0; i < numDepositos; i++) {
-                if (matrizAdyacencia[actual][i] == 1 && !visitado[i]) {
-                    visitado[i] = true;
-                    cola.add(i);
-                }
-            }
-        }
-        System.out.println();
-    }
-
-    /**
-     * Cuenta la cantidad de nodos en un Árbol Binario de Búsqueda (ABB) de depósitos.
-     * Utiliza recursividad para recorrer el árbol completo.
-     * 
-     * @param raiz el nodo raíz del árbol (o subárbol) a contar
-     * @return cantidad de nodos en el árbol, 0 si la raíz es null
-     * Complejidad temporal: O(n) donde n es la cantidad de nodos
-     * Complejidad espacial: O(h) donde h es la altura del árbol (por la pila de recursión)
-     */
     public int contarDeposito(Deposito raiz) {
         // Caso base: si el nodo es null, retornar 0
         if (raiz == null) {
