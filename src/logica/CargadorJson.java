@@ -7,31 +7,26 @@ import java.io.FileReader;
 import java.util.Set;
 
 public class CargadorJson implements CargadorDatos {
+    private final String rutaInventario;
+    private final String rutaDepositos;
+
+    public CargadorJson() {
+        this("src/logica/inventario.json", "src/logica/depositos.json");
+    }
+
+    public CargadorJson(String rutaInventario, String rutaDepositos) {
+        this.rutaInventario = rutaInventario;
+        this.rutaDepositos = rutaDepositos;
+    }
 
     @Override
     public void cargarInventario(Set<String> idsUsados, CentroDistribucion centro) {
-        try (FileReader reader = new FileReader("src/logica/inventario.json")) {
+        try (FileReader reader = new FileReader(rutaInventario)) {
             Gson gson = new Gson();
             Paquete[] lista = gson.fromJson(reader, Paquete[].class);
 
             if (lista != null) {
-                for (Paquete paquete : lista) {
-                    String idString = String.valueOf(paquete.getId());
-
-                    if (!idsUsados.contains(idString)) {
-                        idsUsados.add(idString);
-
-                        Paquete nuevo = new Paquete(
-                                idString,
-                                paquete.getPeso(),
-                                paquete.getDestino(),
-                                paquete.isUrgente(),
-                                paquete.getContenido()
-                        );
-
-                        centro.recibirPaquete(nuevo);
-                    }
-                }
+                RegistroDatos.registrarInventario(lista, idsUsados, centro);
 
                 System.out.println("Inventario cargado exitosamente.");
             }
@@ -43,20 +38,12 @@ public class CargadorJson implements CargadorDatos {
 
     @Override
     public void cargarDepositos(ABB arbolDepositos, RedDepositos redDepositos) {
-        try (FileReader reader = new FileReader("src/logica/depositos.json")) {
+        try (FileReader reader = new FileReader(rutaDepositos)) {
             Gson gson = new Gson();
             DepositosWrapper wrapper = gson.fromJson(reader, DepositosWrapper.class);
 
             if (wrapper != null && wrapper.depositos != null) {
-                for (DepositoJson deposito : wrapper.depositos) {
-                    arbolDepositos.insertar(deposito.id, deposito.auditado);
-
-                    if (deposito.conexiones != null) {
-                        for (int conexion : deposito.conexiones) {
-                            redDepositos.agregarRuta(deposito.id, conexion);
-                        }
-                    }
-                }
+                RegistroDatos.registrarDepositos(wrapper.depositos, arbolDepositos, redDepositos);
 
                 System.out.println("Depósitos cargados exitosamente.");
             }

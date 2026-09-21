@@ -11,12 +11,18 @@ public class MenuPrincipal {
     private Camion camion = new Camion();
     private ABB arbolDepositos = new ABB();
     private RedDepositos redDepositos = new RedDepositos(100);
-    private final CargadorDatos cargadorDatos;
+    private final CargadorInventario cargadorInventario;
+    private final CargadorDepositos cargadorDepositos;
 
     private Set<String> idsUsados = new HashSet<>();
 
     public MenuPrincipal(CargadorDatos cargadorDatos) {
-        this.cargadorDatos = cargadorDatos;
+        this(cargadorDatos, cargadorDatos);
+    }
+
+    public MenuPrincipal(CargadorInventario cargadorInventario, CargadorDepositos cargadorDepositos) {
+        this.cargadorInventario = cargadorInventario;
+        this.cargadorDepositos = cargadorDepositos;
     }
 
     public void iniciarMenu() {
@@ -52,7 +58,7 @@ public class MenuPrincipal {
     private void procesarOpcion(int opcion) {
         switch (opcion) {
             case 1:
-                cargadorDatos.cargarInventario(idsUsados, centro);
+                cargadorInventario.cargarInventario(idsUsados, centro);
                 break;
             case 2:
                 cargarManual();
@@ -70,7 +76,7 @@ public class MenuPrincipal {
                 descargar();
                 break;
             case 7:
-                cargadorDatos.cargarDepositos(arbolDepositos, redDepositos);
+                cargadorDepositos.cargarDepositos(arbolDepositos, redDepositos);
                 break;
             case 8:
                 insertarDeposito();
