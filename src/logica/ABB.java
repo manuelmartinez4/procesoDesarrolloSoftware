@@ -72,16 +72,8 @@ public class ABB {
     imprimirNivelRecursivo(nodo.getDerecho(), nivel, nivelActual + 1);
     }
 
-    public void buscar(int id) {
-        Deposito resultado = buscarRecursivo(raiz, id);
-    
-        if (resultado != null) {
-            System.out.println("Depósito encontrado: ID " + resultado.getId()
-                    + " | Visitado: " + resultado.isVisitado()
-                    + " | Última Auditoría: " + resultado.getFechaUltimaAuditoria());
-        } else {
-            System.out.println("Depósito con ID " + id + " no encontrado.");
-        }
+    public Deposito buscar(int id) {
+        return buscarRecursivo(raiz, id);
     }
 
     private Deposito buscarRecursivo(Deposito nodo, int id) {

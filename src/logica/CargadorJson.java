@@ -6,8 +6,9 @@ import com.google.gson.Gson;
 import java.io.FileReader;
 import java.util.Set;
 
-public class CargadorJson {
+public class CargadorJson implements CargadorDatos {
 
+    @Override
     public void cargarInventario(Set<String> idsUsados, CentroDistribucion centro) {
         try (FileReader reader = new FileReader("src/logica/inventario.json")) {
             Gson gson = new Gson();
@@ -40,6 +41,7 @@ public class CargadorJson {
         }
     }
 
+    @Override
     public void cargarDepositos(ABB arbolDepositos, RedDepositos redDepositos) {
         try (FileReader reader = new FileReader("src/logica/depositos.json")) {
             Gson gson = new Gson();

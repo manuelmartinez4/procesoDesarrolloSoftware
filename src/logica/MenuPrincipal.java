@@ -11,9 +11,13 @@ public class MenuPrincipal {
     private Camion camion = new Camion();
     private ABB arbolDepositos = new ABB();
     private RedDepositos redDepositos = new RedDepositos(100);
-    private CargadorJson cargadorJson = new CargadorJson();
+    private final CargadorDatos cargadorDatos;
 
     private Set<String> idsUsados = new HashSet<>();
+
+    public MenuPrincipal(CargadorDatos cargadorDatos) {
+        this.cargadorDatos = cargadorDatos;
+    }
 
     public void iniciarMenu() {
         int opcion = 0;
@@ -29,14 +33,14 @@ public class MenuPrincipal {
     }
     private void mostrarMenu() {
         System.out.println("\n--- LOGI-UADE 2026: GESTIÓN LOGISTICA ---");
-        System.out.println("1. Cargar inventario desde JSON");
+        System.out.println("1. Cargar inventario");
         System.out.println("2. Cargar paquete manualmente");
         System.out.println("3. Enviar paquete del Centro al Camión");
         System.out.println("4. Ver estado del Camión");
         System.out.println("5. Deshacer última carga del Camión");
         System.out.println("6. Descargar Camión");
         System.out.println("--- Depósitos ---");
-        System.out.println("7. Cargar depósitos desde JSON");
+        System.out.println("7. Cargar depósitos");
         System.out.println("8. Insertar depósito en el ABB");
         System.out.println("9. Auditar depósitos");
         System.out.println("10. Imprimir depósitos por nivel");
@@ -48,7 +52,7 @@ public class MenuPrincipal {
     private void procesarOpcion(int opcion) {
         switch (opcion) {
             case 1:
-                cargadorJson.cargarInventario(idsUsados, centro);
+                cargadorDatos.cargarInventario(idsUsados, centro);
                 break;
             case 2:
                 cargarManual();
@@ -66,7 +70,7 @@ public class MenuPrincipal {
                 descargar();
                 break;
             case 7:
-                cargadorJson.cargarDepositos(arbolDepositos, redDepositos);
+                cargadorDatos.cargarDepositos(arbolDepositos, redDepositos);
                 break;
             case 8:
                 insertarDeposito();
@@ -174,7 +178,15 @@ public class MenuPrincipal {
         System.out.print("ID del depósito a buscar: ");
         int id = scanner.nextInt();
         scanner.nextLine();
-        arbolDepositos.buscar(id);
+        Deposito resultado = arbolDepositos.buscar(id);
+
+        if (resultado != null) {
+            System.out.println("Depósito encontrado: ID " + resultado.getId()
+                    + " | Visitado: " + resultado.isVisitado()
+                    + " | Última Auditoría: " + resultado.getFechaUltimaAuditoria());
+        } else {
+            System.out.println("Depósito con ID " + id + " no encontrado.");
+        }
     }
 
     private void calcularRuta() {
