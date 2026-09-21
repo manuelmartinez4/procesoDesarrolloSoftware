@@ -17,6 +17,14 @@ public class Deposito {
         this.derecho = null;
     }
 
+    public Deposito(int id, boolean auditado) {
+        this(id);
+        this.visitado = auditado;
+        if (!auditado) {
+            this.fechaUltimaAuditoria = LocalDateTime.now().minusDays(45);
+        }
+    }
+
     public int getId() { return id; }
     public boolean isVisitado() { return visitado; }
     public void setVisitado(boolean visitado) { this.visitado = visitado; }

@@ -21,15 +21,7 @@ public class ABB {
 
     private Deposito insertarRecursivo(Deposito nodo, int id, boolean auditado) {
         if (nodo == null) {
-            Deposito nuevo = new Deposito(id);
-            nuevo.setVisitado(auditado); // Sincroniza el atributo 'visitado'
-
-            // Si el JSON indica que no está auditado, se simula una fecha vieja (hace 45 días)
-            // para posibilitar el correcto funcionamiento del recorrido de auditoría del examen.
-            if (!auditado) {
-                nuevo.setFechaUltimaAuditoria(LocalDateTime.now().minusDays(45));
-            }
-            return nuevo;
+            return new Deposito(id, auditado);
         }
         if (id < nodo.getId()) {
             nodo.setIzquierdo(insertarRecursivo(nodo.getIzquierdo(), id, auditado));

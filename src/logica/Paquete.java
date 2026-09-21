@@ -74,6 +74,10 @@ public class Paquete {
         return urgente;
     }
 
+    public boolean esPrioritario() {
+        return urgente || peso > 50.0;
+    }
+
     public String getContenido() {
         return contenido;
     }

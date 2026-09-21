@@ -11,7 +11,7 @@ public class CentroDistribucion {
     private Queue<Paquete> colaEstandar = new LinkedList<>();
 
     public void recibirPaquete(Paquete paquete) {
-        if (paquete.isUrgente() || paquete.getPeso() > 50.0) {
+        if (paquete.esPrioritario()) {
             colaPrioridad.add(paquete);
         } else {
             colaEstandar.add(paquete);
