@@ -54,22 +54,32 @@ public class ABB {
     // --- REPORTE POR NIVEL (OPTIMIZADO) ---
     // Complejidad temporal: O(n) -> En el peor caso recorre los nodos hasta el nivel objetivo
     // Complejidad espacial: O(n) por la pila de recursión
-    public void imprimirNivel(int nivel) {
-        imprimirNivelRecursivo(this.raiz, nivel, 0);
+    public List<Deposito> obtenerDepositosPorNivel(int nivel) {
+    List<Deposito> resultado = new ArrayList<>();
+    obtenerPorNivelRecursivo(raiz, nivel, 0, resultado);
+    return resultado;
     }
 
-    private void imprimirNivelRecursivo(Deposito nodo, int nivel, int nivelActual) {
-    if (nodo == null) return;
-
-    if (nivelActual == nivel) {
-        System.out.println("Depósito ID: " + nodo.getId()
-                + " | Visitado: " + nodo.isVisitado()
-                + " | Última Auditoría: " + nodo.getFechaUltimaAuditoria());
-        return;
-    }
-
-    imprimirNivelRecursivo(nodo.getIzquierdo(), nivel, nivelActual + 1);
-    imprimirNivelRecursivo(nodo.getDerecho(), nivel, nivelActual + 1);
+    private void obtenerPorNivelRecursivo(
+            Deposito nodo,
+            int nivelBuscado,
+            int nivelActual,
+            List<Deposito> resultado) {
+    
+        if (nodo == null) {
+            return;
+        }
+    
+        if (nivelActual == nivelBuscado) {
+            resultado.add(nodo);
+            return;
+        }
+    
+        obtenerPorNivelRecursivo(
+                nodo.getIzquierdo(), nivelBuscado, nivelActual + 1, resultado);
+    
+        obtenerPorNivelRecursivo(
+                nodo.getDerecho(), nivelBuscado, nivelActual + 1, resultado);
     }
 
     public Deposito buscar(int id) {
