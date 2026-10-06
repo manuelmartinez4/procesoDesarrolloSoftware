@@ -1,42 +1,30 @@
 package logica;
 
-import java.util.HashSet;
+import java.util.List;
 import java.util.Scanner;
-import java.util.Set;
 
 public class MenuPrincipal {
 
-    private Scanner scanner = new Scanner(System.in);
-    private CentroDistribucion centro = new CentroDistribucion();
-    private Camion camion = new Camion();
-    private ABB arbolDepositos = new ABB();
-    private RedDepositos redDepositos = new RedDepositos(100);
-    private final CargadorInventario cargadorInventario;
-    private final CargadorDepositos cargadorDepositos;
+    private final Scanner scanner = new Scanner(System.in);
+    private final ControladorLogistica controlador;
 
-    private Set<String> idsUsados = new HashSet<>();
-
-    public MenuPrincipal(CargadorDatos cargadorDatos) {
-        this(cargadorDatos, cargadorDatos);
-    }
-
-    public MenuPrincipal(CargadorInventario cargadorInventario, CargadorDepositos cargadorDepositos) {
-        this.cargadorInventario = cargadorInventario;
-        this.cargadorDepositos = cargadorDepositos;
+    public MenuPrincipal(ControladorLogistica controlador) {
+        this.controlador = controlador;
     }
 
     public void iniciarMenu() {
         int opcion = 0;
-    
+
         while (opcion != 13) {
             mostrarMenu();
-    
+
             opcion = scanner.nextInt();
             scanner.nextLine();
-    
+
             procesarOpcion(opcion);
         }
     }
+
     private void mostrarMenu() {
         System.out.println("\n--- LOGI-UADE 2026: GESTIÓN LOGISTICA ---");
         System.out.println("1. Cargar inventario");
@@ -55,10 +43,11 @@ public class MenuPrincipal {
         System.out.println("13. Salir");
         System.out.print("Seleccione: ");
     }
+
     private void procesarOpcion(int opcion) {
         switch (opcion) {
             case 1:
-                cargadorInventario.cargarInventario(idsUsados, centro);
+                cargarInventario();
                 break;
             case 2:
                 cargarManual();
@@ -67,7 +56,7 @@ public class MenuPrincipal {
                 despacharHaciaCamion();
                 break;
             case 4:
-                camion.mostrarPaquetes();
+                mostrarPaquetes();
                 break;
             case 5:
                 deshacerCarga();
@@ -76,13 +65,13 @@ public class MenuPrincipal {
                 descargar();
                 break;
             case 7:
-                cargadorDepositos.cargarDepositos(arbolDepositos, redDepositos);
+                cargarDepositos();
                 break;
             case 8:
                 insertarDeposito();
                 break;
             case 9:
-                arbolDepositos.auditarDepositos();
+                controlador.auditarDepositos();
                 break;
             case 10:
                 imprimirNivel();
@@ -101,51 +90,86 @@ public class MenuPrincipal {
         }
     }
 
+    private void cargarInventario() {
+        try {
+            controlador.cargarInventario();
+            System.out.println("Inventario cargado exitosamente.");
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void cargarDepositos() {
+        try {
+            controlador.cargarDepositos();
+            System.out.println("Depósitos cargados exitosamente.");
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     private void cargarManual() {
-        String id;                                                      // 1
-        // 'k' representa la cantidad de intentos fallidos por ID duplicado
-        while (true) {                                                  // k + 1
-            System.out.print("ID: ");                                   // k + 1
-            id = scanner.nextLine();                                    // 2k + 2
-            if (idsUsados.contains(id)) {                               // 2k + 2
-                System.out.println("Ese ID ya existe...");              // k
+        String id;
+
+        while (true) {
+            System.out.print("ID: ");
+            id = scanner.nextLine();
+
+            if (controlador.existeId(id)) {
+                System.out.println("Ese ID ya existe...");
             } else {
-                idsUsados.add(id);                                      // 1
-                break;                                                  // 1
+                break;
             }
         }
 
-        System.out.print("Peso: ");                                     // 1
-        double peso = scanner.nextDouble();                             // 2
-        scanner.nextLine();                                             // 1
+        System.out.print("Peso: ");
+        double peso = scanner.nextDouble();
+        scanner.nextLine();
 
-        System.out.print("Destino: ");                                  // 1
-        String destino = scanner.nextLine();                            // 2
+        System.out.print("Destino: ");
+        String destino = scanner.nextLine();
 
-        System.out.print("¿Es Urgente? (Si/No): ");                     // 1
-        boolean urgente = scanner.nextLine().equalsIgnoreCase("si");    // 3
+        System.out.print("¿Es Urgente? (Si/No): ");
+        boolean urgente = scanner.nextLine().equalsIgnoreCase("si");
 
-        System.out.print("Contenido: ");                                // 1
-        String contenido = scanner.nextLine();                               // 2
+        System.out.print("Contenido: ");
+        String contenido = scanner.nextLine();
 
-        centro.recibirPaquete(new Paquete(id, peso, destino, urgente, contenido)); // 3
-        System.out.println("Paquete ingresado correctamente al Centro."); // 1
+        boolean registrado = controlador.cargarPaquete(
+                id, peso, destino, urgente, contenido);
+
+        if (registrado) {
+            System.out.println("Paquete ingresado correctamente al Centro.");
+        } else {
+            System.out.println("Ese ID ya existe...");
+        }
     }
 
     private void despacharHaciaCamion() {
-        Paquete paquete = centro.despacharSiguiente();
-    
+        Paquete paquete = controlador.despacharHaciaCamion();
+
         if (paquete != null) {
-            camion.cargarPaquete(paquete);
             System.out.println("Paquete enviado al camión: " + paquete.getId());
         } else {
             System.out.println("No hay paquetes en el centro.");
         }
     }
 
+    private void mostrarPaquetes() {
+        List<Paquete> paquetes = controlador.obtenerPaquetes();
+
+        if (paquetes.isEmpty()) {
+            System.out.println("El camión está vacío.");
+        } else {
+            for (Paquete paquete : paquetes) {
+                System.out.println(paquete);
+            }
+        }
+    }
+
     private void deshacerCarga() {
-        Paquete paquete = camion.deshacerUltimaCarga();
-    
+        Paquete paquete = controlador.deshacerCarga();
+
         if (paquete != null) {
             System.out.println("Carga deshecha: " + paquete.getId());
         } else {
@@ -154,8 +178,8 @@ public class MenuPrincipal {
     }
 
     private void descargar() {
-        Paquete paquete = camion.descargarPaquete();
-    
+        Paquete paquete = controlador.descargarCamion();
+
         if (paquete != null) {
             System.out.println("Descargando: " + paquete);
         } else {
@@ -163,13 +187,12 @@ public class MenuPrincipal {
         }
     }
 
-
     private void insertarDeposito() {
         System.out.print("ID del depósito: ");
         int id = scanner.nextInt();
         scanner.nextLine();
-        // Por defecto, un depósito dado de alta de forma manual se asume no auditado
-        arbolDepositos.insertar(id, false);
+
+        controlador.insertarDeposito(id);
         System.out.println("Depósito " + id + " insertado.");
     }
 
@@ -177,19 +200,30 @@ public class MenuPrincipal {
         System.out.print("Nivel a imprimir: ");
         int nivel = scanner.nextInt();
         scanner.nextLine();
-        arbolDepositos.imprimirNivel(nivel);
+
+        List<Deposito> depositos =
+                controlador.obtenerDepositosPorNivel(nivel);
+
+        for (Deposito deposito : depositos) {
+            System.out.println("Depósito ID: " + deposito.getId()
+                    + " | Visitado: " + deposito.isVisitado()
+                    + " | Última Auditoría: "
+                    + deposito.getFechaUltimaAuditoria());
+        }
     }
 
     private void buscarDeposito() {
         System.out.print("ID del depósito a buscar: ");
         int id = scanner.nextInt();
         scanner.nextLine();
-        Deposito resultado = arbolDepositos.buscar(id);
+
+        Deposito resultado = controlador.buscarDeposito(id);
 
         if (resultado != null) {
             System.out.println("Depósito encontrado: ID " + resultado.getId()
                     + " | Visitado: " + resultado.isVisitado()
-                    + " | Última Auditoría: " + resultado.getFechaUltimaAuditoria());
+                    + " | Última Auditoría: "
+                    + resultado.getFechaUltimaAuditoria());
         } else {
             System.out.println("Depósito con ID " + id + " no encontrado.");
         }
@@ -198,10 +232,13 @@ public class MenuPrincipal {
     private void calcularRuta() {
         System.out.print("ID origen: ");
         int origen = scanner.nextInt();
+
         System.out.print("ID destino: ");
         int destino = scanner.nextInt();
         scanner.nextLine();
-        int saltos = redDepositos.cantidadSaltos(origen, destino);
+
+        int saltos = controlador.calcularRuta(origen, destino);
+
         if (saltos == -1) {
             System.out.println("No hay ruta entre los depósitos.");
         } else {
