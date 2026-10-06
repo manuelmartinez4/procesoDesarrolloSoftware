@@ -1,6 +1,8 @@
 package logica;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ABB {
     private Deposito raiz;
