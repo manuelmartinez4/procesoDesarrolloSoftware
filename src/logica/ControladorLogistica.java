@@ -1,46 +1,44 @@
 package logica;
 
-import java.util.HashSet;
+import logica.envios.ControladorEnvios;
+import logica.depositos.ControladorDepositos;
 import java.util.List;
-import java.util.Set;
 
+// Conserva la API que utiliza el menú de consola.
 public class ControladorLogistica {
-
-    private final CentroDistribucion centro = new CentroDistribucion();
-    private final Camion camion = new Camion();
-    private final ABB arbolDepositos = new ABB();
-    private final RedDepositos redDepositos = new RedDepositos(100);
-    private final Set<String> idsUsados = new HashSet<>();
-
-    private CargadorInventario cargadorInventario;
-    private CargadorDepositos cargadorDepositos;
+    private final ControladorEnvios envios;
+    private final ControladorDepositos depositos;
 
     public ControladorLogistica(
-            CargadorInventario cargadorInventario,
-            CargadorDepositos cargadorDepositos) {
+            CargadorInventario inventario,
+            CargadorDepositos depositos) {
 
-        this.cargadorInventario = cargadorInventario;
-        this.cargadorDepositos = cargadorDepositos;
+        this.envios = new ControladorEnvios(inventario);
+        this.depositos = new ControladorDepositos(depositos);
+    }
+
+    public ControladorEnvios getEnvios() {
+        return envios;
+    }
+
+    public ControladorDepositos getDepositos() {
+        return depositos;
     }
 
     public void cambiarCargadores(
             CargadorInventario inventario,
             CargadorDepositos depositos) {
 
-        this.cargadorInventario = inventario;
-        this.cargadorDepositos = depositos;
+        envios.cambiarCargador(inventario);
+        this.depositos.cambiarCargador(depositos);
     }
 
     public void cargarInventario() {
-        cargadorInventario.cargarInventario(idsUsados, centro);
-    }
-
-    public void cargarDepositos() {
-        cargadorDepositos.cargarDepositos(arbolDepositos, redDepositos);
+        envios.cargarInventario();
     }
 
     public boolean existeId(String id) {
-        return idsUsados.contains(id);
+        return envios.existeId(id);
     }
 
     public boolean cargarPaquete(
@@ -50,52 +48,47 @@ public class ControladorLogistica {
             boolean urgente,
             String contenido) {
 
-        Paquete paquete = new Paquete(
+        return envios.cargarPaquete(
                 id, peso, destino, urgente, contenido);
-
-        return RegistroDatos.registrarPaquete(
-                paquete, idsUsados, centro);
     }
 
     public Paquete despacharHaciaCamion() {
-        Paquete paquete = centro.despacharSiguiente();
-
-        if (paquete != null) {
-            camion.cargarPaquete(paquete);
-        }
-
-        return paquete;
+        return envios.despacharHaciaCamion();
     }
 
     public Paquete deshacerCarga() {
-        return camion.deshacerUltimaCarga();
+        return envios.deshacerCarga();
     }
 
     public Paquete descargarCamion() {
-        return camion.descargarPaquete();
+        return envios.descargarCamion();
     }
 
     public List<Paquete> obtenerPaquetes() {
-        return camion.obtenerPaquetes();
+        return envios.obtenerPaquetes();
+    }
+
+    public void cargarDepositos() {
+        depositos.cargarDepositos();
     }
 
     public void insertarDeposito(int id) {
-        arbolDepositos.insertar(id, false);
+        depositos.insertarDeposito(id);
     }
 
     public void auditarDepositos() {
-        arbolDepositos.auditarDepositos();
+        depositos.auditarDepositos();
     }
 
     public List<Deposito> obtenerDepositosPorNivel(int nivel) {
-        return arbolDepositos.obtenerDepositosPorNivel(nivel);
+        return depositos.obtenerDepositosPorNivel(nivel);
     }
 
     public Deposito buscarDeposito(int id) {
-        return arbolDepositos.buscar(id);
+        return depositos.buscarDeposito(id);
     }
 
     public int calcularRuta(int origen, int destino) {
-        return redDepositos.cantidadSaltos(origen, destino);
+        return depositos.calcularRuta(origen, destino);
     }
 }
