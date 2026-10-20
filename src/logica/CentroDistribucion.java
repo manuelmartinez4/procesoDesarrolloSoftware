@@ -1,31 +1,35 @@
 package logica;
 
-
-
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
 
 public class CentroDistribucion {
-    // Usamos dos colas para separar la prioridad
-    private Queue<Paquete> colaPrioridad = new LinkedList<>();
-    private Queue<Paquete> colaEstandar = new LinkedList<>();
+    private final Deque<Paquete> prioridad = new ArrayDeque<>();
+    private final Deque<Paquete> estandar = new ArrayDeque<>();
+
+    private Deque<Paquete> cola(Paquete paquete) {
+        return paquete.esPrioritario() ? prioridad : estandar;
+    }
 
     public void recibirPaquete(Paquete paquete) {
-        if (paquete.esPrioritario()) {
-            colaPrioridad.add(paquete);
-        } else {
-            colaEstandar.add(paquete);
-        }
+        cola(paquete).addLast(paquete);
     }
 
+    public void devolverPaquete(Paquete paquete) {
+        cola(paquete).addFirst(paquete);
+    }
 
-
-    // Operación: Despachar Siguiente
     public Paquete despacharSiguiente() {
-        if (!colaPrioridad.isEmpty()) {                 // 2
-            return colaPrioridad.poll();                // 1
-        }
-        return colaEstandar.poll();                     // 1
+        return !prioridad.isEmpty()
+                ? prioridad.pollFirst()
+                : estandar.pollFirst();
     }
 
+    public List<Paquete> obtenerPaquetes() {
+        List<Paquete> resultado = new ArrayList<>(prioridad);
+        resultado.addAll(estandar);
+        return resultado;
+    }
 }
