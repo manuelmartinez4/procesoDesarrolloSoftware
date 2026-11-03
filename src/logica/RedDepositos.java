@@ -1,5 +1,8 @@
 package logica;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class RedDepositos {
     private int[][] matrizAdyacencia;
     private int numDepositos;
@@ -37,7 +40,7 @@ public class RedDepositos {
         boolean[] visitado = new boolean[numDepositos];
         return bfs(origen, destino, visitado);
     }
-    // Complejidad temporal: O(V + E)
+    // Con matriz de adyacencia, BFS recorre hasta V columnas por nodo: O(V^2).
     // Complejidad espacial: O(V) por las estructuras auxiliares de la búsqueda
 
     private int bfs(int origen, int destino, boolean[] visitado) {
@@ -49,7 +52,7 @@ public class RedDepositos {
         while (!cola.isEmpty()) {
             int actual = cola.poll();
             for (int i = 0; i < numDepositos; i++) {
-                if (matrizAdyacencia[actual][i] == 1 && !visitado[i]) {
+                if (matrizAdyacencia[actual][i] > 0 && !visitado[i]) {
                     visitado[i] = true;
                     saltos[i] = saltos[actual] + 1;
                     if (i == destino) return saltos[i];
@@ -61,9 +64,21 @@ public class RedDepositos {
     }
 
     public void agregarRutaPonderada(int origen, int destino, int peso) {
+        if (origen < 0 || destino < 0 || origen == destino || peso <= 0) {
+            throw new IllegalArgumentException("La ruta necesita dos IDs distintos, no negativos, y peso positivo.");
+        }
         garantizarCapacidad(Math.max(origen, destino));
         matrizAdyacencia[origen][destino] = peso;
         matrizAdyacencia[destino][origen] = peso;
+    }
+
+    public List<Integer> obtenerConexiones(int id) {
+        List<Integer> conexiones = new ArrayList<>();
+        if (id < 0 || id >= numDepositos) return conexiones;
+        for (int vecino = 0; vecino < numDepositos; vecino++) {
+            if (matrizAdyacencia[id][vecino] > 0) conexiones.add(vecino);
+        }
+        return conexiones;
     }
 }
 

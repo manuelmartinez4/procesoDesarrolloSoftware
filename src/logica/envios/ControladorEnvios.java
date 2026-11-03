@@ -34,33 +34,21 @@ public class ControladorEnvios {
             String destino,
             boolean urgente,
             String contenido) {
+        return cargarPaquete(id, peso, destino, urgente, contenido, null);
+    }
 
-        id = obligatorio(id, "ID");
-        destino = obligatorio(destino, "Destino");
-        contenido = obligatorio(contenido, "Contenido");
+    public boolean cargarPaquete(String id, double peso, String destino,
+                                 boolean urgente, String contenido,
+                                 Paquete.ZonaDestino zona) {
+        Paquete paquete = new Paquete(id, peso, destino, urgente, contenido, zona);
 
-        if (!Double.isFinite(peso) || peso <= 0) {
-            throw new IllegalArgumentException(
-                    "El peso debe ser mayor que cero.");
-        }
-
-        if (ids.contains(id)) {
+        if (ids.contains(paquete.getId())) {
             return false;
         }
 
-        centro.recibirPaquete(
-                new Paquete(id, peso, destino, urgente, contenido));
-
-        ids.add(id);
+        centro.recibirPaquete(paquete);
+        ids.add(paquete.getId());
         return true;
-    }
-
-    private String obligatorio(String texto, String campo) {
-        if (texto == null || texto.trim().isEmpty()) {
-            throw new IllegalArgumentException(
-                    "Completá el campo " + campo + ".");
-        }
-        return texto.trim();
     }
 
     public Paquete despacharHaciaCamion() {

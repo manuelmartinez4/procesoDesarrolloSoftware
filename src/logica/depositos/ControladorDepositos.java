@@ -30,8 +30,15 @@ public class ControladorDepositos {
     }
 
     public void insertarDeposito(int id) {
-        // Un depósito agregado manualmente comienza sin auditar.
-        arbolDepositos.insertar(id, false);
+        insertarDeposito(id, "Depósito " + id);
+    }
+
+    public void insertarDeposito(int id, String nombre) {
+        validarId(id);
+        if (arbolDepositos.buscar(id) != null) {
+            throw new IllegalArgumentException("Ya existe el depósito " + id + ".");
+        }
+        arbolDepositos.insertar(id, nombre, false);
     }
 
     public void auditarDepositos() {
@@ -43,10 +50,45 @@ public class ControladorDepositos {
     }
 
     public Deposito buscarDeposito(int id) {
+        validarId(id);
         return arbolDepositos.buscar(id);
     }
 
     public int calcularRuta(int origen, int destino) {
+        exigirDeposito(origen);
+        exigirDeposito(destino);
+        if (origen == destino) return 0;
         return redDepositos.cantidadSaltos(origen, destino);
+    }
+
+    public void conectarDepositos(int origen, int destino) {
+        exigirDeposito(origen);
+        exigirDeposito(destino);
+        redDepositos.agregarRuta(origen, destino);
+    }
+
+    public List<Deposito> obtenerTodos() {
+        return arbolDepositos.obtenerTodos();
+    }
+
+    public int contarDepositos() {
+        return arbolDepositos.contarDepositos();
+    }
+
+    public List<Integer> obtenerConexiones(int id) {
+        exigirDeposito(id);
+        return redDepositos.obtenerConexiones(id);
+    }
+
+    private void exigirDeposito(int id) {
+        if (buscarDeposito(id) == null) {
+            throw new IllegalArgumentException("No existe el depósito " + id + ".");
+        }
+    }
+
+    private void validarId(int id) {
+        if (id < 0) {
+            throw new IllegalArgumentException("El ID debe ser mayor o igual que cero.");
+        }
     }
 }

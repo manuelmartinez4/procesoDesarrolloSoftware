@@ -4,13 +4,18 @@ import java.time.LocalDateTime;
 
 public class Deposito {
     private int id;
+    private String nombre;
     private boolean visitado;
     private LocalDateTime fechaUltimaAuditoria;
     private Deposito izquierdo;
     private Deposito derecho;
 
     public Deposito(int id) {
+        if (id < 0) {
+            throw new IllegalArgumentException("El ID del depósito debe ser mayor o igual que cero.");
+        }
         this.id = id;
+        this.nombre = "Depósito " + id;
         this.visitado = false;
         this.fechaUltimaAuditoria = LocalDateTime.now();
         this.izquierdo = null;
@@ -25,7 +30,15 @@ public class Deposito {
         }
     }
 
+    public Deposito(int id, String nombre, boolean auditado) {
+        this(id, auditado);
+        if (nombre != null && !nombre.trim().isEmpty()) {
+            this.nombre = nombre.trim();
+        }
+    }
+
     public int getId() { return id; }
+    public String getNombre() { return nombre; }
     public boolean isVisitado() { return visitado; }
     public void setVisitado(boolean visitado) { this.visitado = visitado; }
     public LocalDateTime getFechaUltimaAuditoria() { return fechaUltimaAuditoria; }

@@ -1,5 +1,7 @@
 package logica;
 
+import java.util.Locale;
+
 public class Paquete {
 
     public enum ZonaDestino {
@@ -12,6 +14,14 @@ public class Paquete {
 
         ZonaDestino(String nombre) {
             this.nombre = nombre;
+        }
+
+        public static ZonaDestino desdeTexto(String texto) {
+            try {
+                return valueOf(texto.trim().toUpperCase(Locale.ROOT));
+            } catch (IllegalArgumentException | NullPointerException e) {
+                throw new IllegalArgumentException("Zona inválida: " + texto);
+            }
         }
 
         @Override
@@ -28,12 +38,27 @@ public class Paquete {
     private ZonaDestino zonaDestino;
 
     public Paquete(String id, double peso, String destino, boolean urgente, String contenido) {
-        this.id = id;
+        this(id, peso, destino, urgente, contenido, null);
+    }
+
+    public Paquete(String id, double peso, String destino, boolean urgente,
+                   String contenido, ZonaDestino zonaDestino) {
+        this.id = obligatorio(id, "ID");
+        if (!Double.isFinite(peso) || peso <= 0) {
+            throw new IllegalArgumentException("El peso debe ser mayor que cero.");
+        }
         this.peso = peso;
-        this.destino = destino;
+        this.destino = obligatorio(destino, "Destino");
         this.urgente = urgente;
-        this.contenido = contenido;
-        this.zonaDestino = clasificarZona(destino);
+        this.contenido = obligatorio(contenido, "Contenido");
+        this.zonaDestino = zonaDestino == null ? clasificarZona(destino) : zonaDestino;
+    }
+
+    private static String obligatorio(String texto, String campo) {
+        if (texto == null || texto.trim().isEmpty()) {
+            throw new IllegalArgumentException("Completá el campo " + campo + ".");
+        }
+        return texto.trim();
     }
 
     private ZonaDestino clasificarZona(String destino) {
@@ -41,7 +66,7 @@ public class Paquete {
             return ZonaDestino.OTRO;
         }
 
-        String destinoNormalizado = destino.toLowerCase();
+        String destinoNormalizado = destino.toLowerCase(Locale.ROOT);
 
         if (destinoNormalizado.contains("norte")) {
             return ZonaDestino.NORTE;

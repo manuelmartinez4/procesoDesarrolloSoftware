@@ -2,12 +2,22 @@
 package logica;
 
 import com.google.gson.Gson;
-import java.io.FileReader;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Set;
 
 public class CargadorJson implements CargadorDatos {
 
-    private final Gson gson = new Gson();
+    private final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(Paquete.ZonaDestino.class,
+                    (JsonDeserializer<Paquete.ZonaDestino>) (json, tipo, contexto) ->
+                            json.isJsonNull() ? null
+                                    : Paquete.ZonaDestino.desdeTexto(json.getAsString()))
+            .create();
     private final String rutaInventario;
     private final String rutaDepositos;
 
@@ -25,7 +35,7 @@ public class CargadorJson implements CargadorDatos {
             Set<String> idsUsados,
             CentroDistribucion centro) {
 
-        try (FileReader reader = new FileReader(rutaInventario)) {
+        try (Reader reader = Files.newBufferedReader(Path.of(rutaInventario), StandardCharsets.UTF_8)) {
 
             Paquete[] lista = gson.fromJson(reader, Paquete[].class);
 
@@ -48,7 +58,7 @@ public class CargadorJson implements CargadorDatos {
             ABB arbolDepositos,
             RedDepositos redDepositos) {
 
-        try (FileReader reader = new FileReader(rutaDepositos)) {
+        try (Reader reader = Files.newBufferedReader(Path.of(rutaDepositos), StandardCharsets.UTF_8)) {
 
             DepositosWrapper wrapper =
                     gson.fromJson(reader, DepositosWrapper.class);

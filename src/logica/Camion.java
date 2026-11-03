@@ -3,6 +3,7 @@ package logica;
 import java.util.Stack;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
 
 public class Camion {
 
@@ -41,6 +42,8 @@ public class Camion {
     }
 
     public List<Paquete> obtenerPaquetes() {
-        return new ArrayList<>(pilaDePaquetes);
+        List<Paquete> resultado = new ArrayList<>(pilaDePaquetes);
+        Collections.reverse(resultado);
+        return resultado;
     }
 }

@@ -18,17 +18,24 @@ public class ABB {
     // Complejidad espacial: O(log n) por la pila de recursión
     // Nota adicional: Adaptado para recibir el estado 'auditado' desde el JSON.
     public void insertar(int id, boolean auditado) {
-        raiz = insertarRecursivo(raiz, id, auditado);
+        insertar(id, "Depósito " + id, auditado);
     }
 
-    private Deposito insertarRecursivo(Deposito nodo, int id, boolean auditado) {
+    public void insertar(int id, String nombre, boolean auditado) {
+        if (id < 0) {
+            throw new IllegalArgumentException("El ID del depósito debe ser mayor o igual que cero.");
+        }
+        raiz = insertarRecursivo(raiz, id, nombre, auditado);
+    }
+
+    private Deposito insertarRecursivo(Deposito nodo, int id, String nombre, boolean auditado) {
         if (nodo == null) {
-            return new Deposito(id, auditado);
+            return new Deposito(id, nombre, auditado);
         }
         if (id < nodo.getId()) {
-            nodo.setIzquierdo(insertarRecursivo(nodo.getIzquierdo(), id, auditado));
+            nodo.setIzquierdo(insertarRecursivo(nodo.getIzquierdo(), id, nombre, auditado));
         } else if (id > nodo.getId()) {
-            nodo.setDerecho(insertarRecursivo(nodo.getDerecho(), id, auditado));
+            nodo.setDerecho(insertarRecursivo(nodo.getDerecho(), id, nombre, auditado));
         }
         return nodo;
     }
@@ -57,6 +64,9 @@ public class ABB {
     // Complejidad temporal: O(n) -> En el peor caso recorre los nodos hasta el nivel objetivo
     // Complejidad espacial: O(n) por la pila de recursión
     public List<Deposito> obtenerDepositosPorNivel(int nivel) {
+    if (nivel < 0) {
+        throw new IllegalArgumentException("El nivel debe ser mayor o igual que cero.");
+    }
     List<Deposito> resultado = new ArrayList<>();
     obtenerPorNivelRecursivo(raiz, nivel, 0, resultado);
     return resultado;
@@ -86,6 +96,19 @@ public class ABB {
 
     public Deposito buscar(int id) {
         return buscarRecursivo(raiz, id);
+    }
+
+    public List<Deposito> obtenerTodos() {
+        List<Deposito> resultado = new ArrayList<>();
+        recorrerEnOrden(raiz, resultado);
+        return resultado;
+    }
+
+    private void recorrerEnOrden(Deposito nodo, List<Deposito> resultado) {
+        if (nodo == null) return;
+        recorrerEnOrden(nodo.getIzquierdo(), resultado);
+        resultado.add(nodo);
+        recorrerEnOrden(nodo.getDerecho(), resultado);
     }
 
     private Deposito buscarRecursivo(Deposito nodo, int id) {
